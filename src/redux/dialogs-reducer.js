@@ -12,10 +12,10 @@ let initialState = {
     ],
     messages: [
         {id: 1, message: 'Hi'},
-        {id: 1, message: 'How is your it-kamasutra?'},
-        {id: 1, message: 'Hi'},
-        {id: 1, message: 'Yo'},
-        {id: 1, message: 'Yep'}
+        {id: 2, message: 'How is your it-kamasutra?'},
+        {id: 3, message: 'Hi'},
+        {id: 4, message: 'Yo'},
+        {id: 5, message: 'Yep'}
     ],
     newMessageText: '222'
 };
@@ -23,18 +23,22 @@ let initialState = {
 const dialogsReducer = (state = initialState, action) => {
     switch (action.type) {
         case ADD_MESSAGE:
-            let StateCopy = {...state};
-            let newMessage = {
-            id: 2,
-            message: StateCopy.newMessageText,
-        };
-            StateCopy.messages.push(newMessage);
-            StateCopy.newMessageText = '';
-        return StateCopy;
+            let text = state.newMessageText;
+            return  {
+                ...state,
+                newMessageText: '',
+// создаём новый массив.
+// ...state.messages - закидывает элементы из старого messages
+// {id: 6,message: text} - дописываем ещё один элемент
+                messages: [...state.messages, {id: 6,message: text}]
+            }
         case UPDATE_NEW_MESSAGE_TEXT:
-            let stateCopy = {...state};
-            stateCopy.newMessageText = action.newText;
-            return stateCopy;
+// создаём объект. Разворачиваем старый объект, заполняем старыми значениями,
+// создаём новое (перезатираем конкретное свойство newMessageText)
+            return {
+                ...state,
+                newMessageText: action.newText
+            }
         default:
             return state;
     }
