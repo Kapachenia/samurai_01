@@ -11,6 +11,7 @@ import News from "./components/News/News";
 import Music from "./components/Music/Music";
 import Settings from "./components/Settings/Settings";
 import { BrowserRouter, Route} from "react-router-dom";
+import DialogsContainer from "./components/Dialogs/DialogsContainer";
 
 const App = (props) => {
     return (
@@ -20,9 +21,9 @@ const App = (props) => {
                 <Navbar/>
                 <div className='app-wrapper-content'>
                     {/*<Route path='/profile' render={ () => <Profile profilePage={ props.state.profilePage } addPost = {props.addPost} updateNewPostText = {props.updateNewPostText} /> }/>*/}
-                    <Route path='/profile' render={ () => <Profile profilePage={ props.state.profilePage } dispatch = {props.dispatch} /> }/>
+                    <Route path='/profile' render={ () => <Profile /> }/>
                     {/*<Route path='/dialogs' render={ () => <Dialogs state={ props.state.dialogsPage } addMessage = {props.addMessage} updateNewMessageText = {props.updateNewMessageText} /> }/>*/}
-                    <Route path='/dialogs' render={ () => <Dialogs dispatch = {props.dispatch} store={props.store} /> }/>
+                    <Route path='/dialogs' render={ () => <DialogsContainer /> }/>
                     <Route path='/news' render={ () => <News />} />
                     <Route path='/music' render={ () => <Music />} />
                     <Route path='/settings' render={ () => <Settings /> } />
