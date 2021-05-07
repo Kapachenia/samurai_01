@@ -2,15 +2,17 @@ import React from "react";
 
 const FOLLOW = 'FOLLOW';
 const UNFOLLOW = 'UNFOLLOW';
-const SET_USERS = 'SET-USERS'
-const SET_CURRENT_PAGE = 'SET-CURRENT-PAGE'
-const SET_TOTAL_USERS_COUNT = 'SET-TOTAL-USERS-COUNT'
+const SET_USERS = 'SET-USERS';
+const SET_CURRENT_PAGE = 'SET-CURRENT-PAGE';
+const SET_TOTAL_USERS_COUNT = 'SET-TOTAL-USERS-COUNT';
+const TOGGLE_IS_FETCHING = 'TOGGLE-IS-FETCHING';
 
 let initialState = {
     users: [],
     pageSize: 5,
     totalUsersCount: 0,
-    currentPage: 1
+    currentPage: 1,
+    isFetching: true
 
 };
 
@@ -58,6 +60,9 @@ const usersReducer = (state = initialState, action) => {
         case SET_TOTAL_USERS_COUNT: {
             return { ...state, totalUsersCount: action.count }
         }
+        case TOGGLE_IS_FETCHING: {
+            return { ...state, isFetching: action.isFetching }
+        }
         default:
             return state;
 
@@ -66,22 +71,27 @@ const usersReducer = (state = initialState, action) => {
 
 // action creator - чистая функция, которая возвращает action
 
-export const followAC = (userId) =>  ({ type: FOLLOW, userId })
+export const follow = (userId) =>  ({ type: FOLLOW, userId })
 
-export const unfollowAC = (userId) => {
+export const unfollow = (userId) => {
     return { type: UNFOLLOW, userId }
 }
 // юзеров получаем из вне и можем засетать
-export const setUsersAC = (users) => {
+export const setUsers = (users) => {
     return { type: SET_USERS, users}
 }
 // можем изменить текущую страничку
-export const setCurrentPageAC = (currentPage) => {
+export const setCurrentPage = (currentPage) => {
     return { type: SET_CURRENT_PAGE, currentPage}
 }
 // установить общее значение пользователей
-export const setUsersTotalCountAC = (totalUsersCount) => {
+export const setTotalUsersCount = (totalUsersCount) => {
     return { type: SET_TOTAL_USERS_COUNT, count: totalUsersCount}
+}
+// action - это объект у которого есть как минимум свойство type, а так же свойства, которые нужны reduserу для обработки actiona
+// reducer из actiona достаёт isFetching (action.isFetching), мы должны это свойство сформировать. Формируем isFetching
+export const toggleIsFetching = (isFetching) => {
+    return { type: TOGGLE_IS_FETCHING, isFetching}
 }
 
 export default usersReducer;

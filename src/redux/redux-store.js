@@ -2,6 +2,7 @@ import {combineReducers, createStore} from "redux";
 import profileReducer from "./profile-reducer";
 import dialogsReducer from "./dialogs-reducer";
 import usersReducer from "./users-reduser";
+import authReducer from "./auth-reducer";
 
 // reducer - это чистая функция, которая принимает старый state, action, если нужно, можифицирует старый state,
 // возвращает модифицоронный, или старый, если не нужно было его менять.
@@ -9,7 +10,8 @@ import usersReducer from "./users-reduser";
 let reducers = combineReducers( {
     profilePage: profileReducer,
     dialogsPage: dialogsReducer,
-    usersPage: usersReducer
+    usersPage: usersReducer,
+    auth: authReducer
 
 });
 

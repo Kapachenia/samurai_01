@@ -1,5 +1,6 @@
 const ADD_POST = 'ADD-POST';
 const UPDATE_NEW_POST_TEXT = 'UPDATE-NEW-POST-TEXT';
+const SET_USER_PROFILE = 'SET-USER-PROFILE';
 
 let initialState = {
     posts: [
@@ -8,7 +9,8 @@ let initialState = {
         {id: 3, message: 'Hi', likesCount: 11},
         {id: 4, message: 'Hello', likesCount: 11}
     ],
-    newPostText: '111'
+    newPostText: '111',
+    profile: null
 };
 
 const profileReducer = (state = initialState, action) => {
@@ -45,6 +47,14 @@ const profileReducer = (state = initialState, action) => {
             // stateCopy.newPostText = action.newText;
             // return stateCopy
         }
+        // если тип actiona SET_USER_PROFILE, то мы вернём копию ...state в котором поменяем profile на
+        // profile который сидит в actione
+        case SET_USER_PROFILE: {
+            return  {
+                ...state,
+                profile: action.profile
+            }
+        }
         default:
             return state;
     }
@@ -53,6 +63,15 @@ const profileReducer = (state = initialState, action) => {
 export const addPostActionCreator = () => {
     return {
         type: ADD_POST
+    }
+}
+
+// создаём AC(функция возвращающая объект, action(объект в котором инкапсулированы данные, для того что бы
+// reducer получил этот action и применил изменения на state ) ) в который приходит profile.
+// SET_USER_PROFILE - названия действия (actiona). Хотим засетать юзерский профайл, reducer возмёт из экшина
+export const setUserProfile = (profile) => {
+    return {
+        type: SET_USER_PROFILE, profile
     }
 }
 

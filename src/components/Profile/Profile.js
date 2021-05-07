@@ -1,13 +1,12 @@
 import React from 'react';
-import MyPosts from "./MyPosts/MyPosts";
 import ProfileInfo from "./ProfileInfo/ProfileInfo";
 import MyPostsContainer from "./MyPosts/MyPostsContainer";
 
 const Profile = (props) => {
-
+// Profile прокидывает props.profile через props в ProfileInfo. props пришли через ProfileContainer
     return (
         <div>
-            <ProfileInfo />
+            <ProfileInfo profile = {props.profile}/>
             <MyPostsContainer />
         </div>
     )
