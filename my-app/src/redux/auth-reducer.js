@@ -30,7 +30,7 @@ const authReducer = (state = initialState, action) => {
 // data меняем на payload
                 ...action.payload,
 // склеиваем ...state и ...action.data. Свойства, которые находятся в ...action.data перезатирают свойства в .state
-                    // если пришли пользовательские данные, то мы меняем на true
+                // если пришли пользовательские данные, то мы меняем на true
                 // isAuth: true
             }
         default:
@@ -49,63 +49,67 @@ export const setAuthUserData = (userId, email, login, isAuth) => {
 }
 
 // функция внешняя, которая возвращает внутренюю функцию
-
-export const getAuthUserData = () => (dispatch) => {
-    return authAPI.me()
-        // .me и .then возврощает promise, если допишем return, то promise нам вернётся наружу
-        // promise идёт в app-reducer
-        .then(response => {
+// если из thunk мы возвращает что-то, то в том месте, где мы вызвали thunk в app-reducer
+// если thunk что-то return, то этот return становится return самого dispatch
+// async функция возвращает promise, функция зарезолвится, когда всё выполнится
+export const getAuthUserData = () => async (dispatch) => {
+// promise можем дождаться не с помощью .then, а с помощью await
+// .me возвращает promise функция должна быть async. response - значение, которым promise зарезолвился
+    let response = await authAPI.me()
+// .me и .then возврощает promise, если допишем return, то promise нам вернётся наружу
+// promise идёт в app-reducer
+//         .then(response => {
 // проверка response.data.resultCode === 0 - если 0, то мы залогинены
 // и в этом случае мы должны задиспатчик авторизационные данные, которые возмём из response.data.data.login
 // в response сидит data, стандартная axios структура
-            if (response.data.resultCode === 0) {
-                let {id, login, email} = response.data.data;
+    if (response.data.resultCode === 0) {
+        let {id, login, email} = response.data.data;
 // если мы залогинелись правильно resultCode === 0, то мы данные, которые вернул сервер id, email, login
 // задиспатчем с помощью setAuthUserData и true добавим
-                dispatch(setAuthUserData(id, email, login, true));
+        dispatch(setAuthUserData(id, email, login, true));
 // авторизационные данные придут в reducer
-            }
-        });
-    return "yo";
+    }
+    // });
+    // return "yo";
 }
 
 // thunk это функция принимает метод dispatch
 // thunk creator это функция возвращающая dispatch и может принимать что-то и это что-то доступно
 // thunk в результате замыкания
 
-export const login = (email, password, rememberMe) => (dispatch) => {
-authAPI.login(email, password, rememberMe)
-    .then(response => {
-        // если залогится будет resultCode === 0
-        if (response.data.resultCode === 0) {
-            // после логинизации мы заново должны запросить authAPI.me()
-            // должны заново задиспатчить thunk. Вызываем thunk creator он возвращает thunk
-            // thunk уходит через dispatch в store
-            dispatch(getAuthUserData())
-        } else {
-            // stopSubmit - это специальный action creator из redux-form
-            // мы stopSubmit собмитим, говоря, что хотим прекратить собмит формы и дальше dispatch action
-            // в AC нужно передать сабмит какой формы мы стопаем. Вторым параметром передаём объект
-            // с проблемными свойствами для каждого fild
-            // форма получит одну ошибку на всю форму
-            // let action = stopSubmit("login", {_error: "Common error"});
-            // возмём ошибку из ответа
-            let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
-            dispatch(stopSubmit("login", {_error: message}));
-        }
-    });
+export const login = (email, password, rememberMe) => async (dispatch) => {
+    let response = await authAPI.login(email, password, rememberMe);
+    // .then(response => {
+    // если залогится будет resultCode === 0
+    if (response.data.resultCode === 0) {
+        // после логинизации мы заново должны запросить authAPI.me()
+        // должны заново задиспатчить thunk. Вызываем thunk creator он возвращает thunk
+        // thunk уходит через dispatch в store
+        dispatch(getAuthUserData())
+    } else {
+        // stopSubmit - это специальный action creator из redux-form
+        // мы stopSubmit собмитим, говоря, что хотим прекратить собмит формы и дальше dispatch action
+        // в AC нужно передать сабмит какой формы мы стопаем. Вторым параметром передаём объект
+        // с проблемными свойствами для каждого fild
+        // форма получит одну ошибку на всю форму
+        // let action = stopSubmit("login", {_error: "Common error"});
+        // возмём ошибку из ответа
+        let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
+        dispatch(stopSubmit("login", {_error: message}));
+    }
+    // });
 }
 
 // thunk creator для logout
 
-export const logout = () => (dispatch) => {
-    authAPI.logout()
-        .then(response => {
+export const logout = () => async (dispatch) => {
+    let response = await authAPI.logout()
+    // .then(response => {
 // мы вылогинелись, кука удалилась, resultCode === 0. Должны зачистить своё состояние
-            if (response.data.resultCode === 0) {
-                dispatch(setAuthUserData(null, null, null, false));
-            }
-        });
+    if (response.data.resultCode === 0) {
+        dispatch(setAuthUserData(null, null, null, false));
+    }
+    // });
 }
 
 export default authReducer;

@@ -29,7 +29,6 @@ let initialState = {
 
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "FAKE": return {...state, fake: state.fake + 1}
         case FOLLOW:
 // Меняем один из элементов массива.
 // .map возвращает новый массив на основе старого массива. Пробегаем по массиву users
@@ -116,10 +115,12 @@ export const toggleFollowingProgress = (isFetching, userId) => {
 
 // создадим thunk - это функция которая внутри себя диспатчет обычные action
 // принимает функцию dispatch
-// создадим ThunkCreator - функкция, которая может что-то принимать и возвращает Thunk
+// создадим requestUsers ThunkCreator - функкция, которая может что-то принимать и возвращает Thunk
 // вызов ThunkCreator создаст Thunk. Сможет достучаться до currentPage и pageSize, которые кто-то передаст в ThunkCreator
 export const requestUsers = (page, pageSize) => {
-    return (dispatch) => {
+// делаем thunk асинхронной
+// thunk - внутренняя функция
+    return async (dispatch) => {
         // перед запросом на сервер добавляем вызов toggleIsFetching
         dispatch(toggleIsFetching(true));
         // запрашиваем и dispatch setCurrentPage для подсветки выбранной страницы
@@ -127,54 +128,54 @@ export const requestUsers = (page, pageSize) => {
     // getUsers находится в api.js
     // .then - когда пользователи будут получины, можно обработать данные
     // вместо .then(response) => .then(data)
-    usersAPI.getUsers(page, pageSize).then(data => {
+    let data = await usersAPI.getUsers(page, pageSize);
+        // .then(data => {
         // когда приходит ответ от сервера toggleIsFetching = false
         dispatch(toggleIsFetching(false));
         dispatch(setUsers(data.items));
         // из компоненты UI отправляем в state, для этого нужен call back. call back передают через props
         // call back, который меняет что-то в state к нам приходит через mapDispatchToProps
         dispatch(setTotalUsersCount(data.totalCount));
-    });
+    // });
 }
 }
 
 export const follow = (usesrId) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(toggleFollowingProgress(true, usesrId));
         // axios.post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`, {},
         //     {
         //         withCredentials: true,
         //         headers: {"API-KEY": "716f1b8b-bc85-4d85-b00e-40338217278b"}
         //     })
-        usersAPI.follow(usesrId)
-            .then(response => {
+        let response = await usersAPI.follow(usesrId);
+            // .then(response => {
                 if (response.data.resultCode == 0) {
                     dispatch(followSuccess(usesrId));
                 }
 // по окончанию асинхронного запроса мы диспатчем false
                 dispatch(toggleFollowingProgress(false, usesrId));
 
-            });
+            // });
     }
 }
 
 export const unfollow = (usesrId) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(toggleFollowingProgress(true, usesrId));
         // axios.post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`, {},
         //     {
         //         withCredentials: true,
         //         headers: {"API-KEY": "716f1b8b-bc85-4d85-b00e-40338217278b"}
         //     })
-        usersAPI.unfollow(usesrId)
-            .then(response => {
+        let response = await usersAPI.unfollow(usesrId);
+            // .then(response => {
                 if (response.data.resultCode == 0) {
                     dispatch(unfollowSuccess(usesrId));
                 }
 // по окончанию асинхронного запроса мы диспатчем false
                 dispatch(toggleFollowingProgress(false, usesrId));
-
-            });
+            // });
     }
 }
 

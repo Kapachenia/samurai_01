@@ -29,6 +29,8 @@ export const initializeApp = () => (dispatch) => {
     // задиспатчем получение авторизационных данных и когда данные будут получены задиспатчем initializedSuccess
     // мы проинициализировались, только после завершения асинхронных диспатчей
     // promise приходит из auth-reducer и мф можем дождаться, когда он зарезолвится
+    // если thunk что-то return, то этот return становится return самого dispatch
+    // вызываем thunk creator getAuthUserData(), возвращается thunk
     let promise = dispatch(getAuthUserData());
     Promise.all([promise])
         .then(() => {

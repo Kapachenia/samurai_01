@@ -4,6 +4,7 @@ const ADD_POST = 'ADD-POST';
 // const UPDATE_NEW_POST_TEXT = 'UPDATE-NEW-POST-TEXT';
 const SET_USER_PROFILE = 'SET-USER-PROFILE';
 const SET_STATUS = 'SET-STATUS';
+const DELETE_POST = 'DELETE-POST';
 
 let initialState = {
     posts: [
@@ -66,6 +67,14 @@ const profileReducer = (state = initialState, action) => {
                 profile: action.profile
             }
         }
+        case DELETE_POST: {
+            return {
+// возвращается копия state в которой мы возмём старые посты и отфильтруем по id
+// только те id, которые не равны action postId
+                ...state,
+                posts: state.posts.filter(p => p.id != action.postId)
+            }
+        }
         default:
             return state;
     }
@@ -94,33 +103,48 @@ export const setStatus = (status) => {
     }
 }
 
-export const getUserProfile = (userId) => (dispatch) => {
-    usersAPI.getProfile(userId)
-        // axios.get(`https://social-network.samuraijs.com/api/1.0/profile/${userId}`)
-        // с servera приходит объект response в нём нужно свойство data
-        .then(response => {
-            // весь объекст сэтаем в reduces
-            dispatch(setUserProfile(response.data));
-            // в props этот объект где-то должен появится, с помощье mapDispatchToProps
-        });
+export const deletePost = (postId) => {
+    return {
+        type: DELETE_POST, postId
+    }
+}
+// заменим .then на await
+export const getUserProfile = (userId) => async (dispatch) => {
+    let response = await usersAPI.getProfile(userId);
+    // axios.get(`https://social-network.samuraijs.com/api/1.0/profile/${userId}`)
+    // с servera приходит объект response в нём нужно свойство data
+    // .then(response => {
+    // весь объекст сэтаем в reduces
+    dispatch(setUserProfile(response.data));
+    // в props этот объект где-то должен появится, с помощье mapDispatchToProps
+    // });
 }
 
 // создадим thunk
-export const getStatus = (userId) => (dispatch) => {
-    profileAPI.getStatus(userId)
-        .then(response => {
-            dispatch(setStatus(response.data))
-        });
+export const getStatus = (userId) => async (dispatch) => {
+// в response будет сидеть результат, которым зарезолвится promise
+    let response = await profileAPI.getStatus(userId)
+    // .then(response => {
+    dispatch(setStatus(response.data))
+    // });
 }
 
-export const updateStatus = (status) => (dispatch) => {
-    profileAPI.updateStatus(status)
-        .then(response => {
-            if (response.data.resultCode === 0) {
-                dispatch(setStatus(status));
-            }
-        });
+export const updateStatus = (status) => async (dispatch) => {
+    let response = await profileAPI.updateStatus(status)
+    // .then(response => {
+    if (response.data.resultCode === 0) {
+        dispatch(setStatus(status));
+    }
+    // });
 }
+
+// export const deletePost = (postId) => async (dispatch) => {
+//     let response = await profileAPI.delete(postId)
+//             if (response.data.resultCode === 0) {
+//                 dispatch(setStatus(status));
+//                 }
+//
+// }
 
 // export const updateNewPostTextActionCreator = (text) => {
 //     return {

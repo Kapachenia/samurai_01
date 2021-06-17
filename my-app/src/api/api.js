@@ -58,6 +58,7 @@ export const profileAPI = {
 }
 
 export const authAPI = {
+    // возвращает promise, используется в auth-reducer
     me() {
         return instance.get('auth/me');
     },
