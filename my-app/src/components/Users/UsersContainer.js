@@ -6,7 +6,6 @@ import {
 } from "../../redux/users-reduser";
 import Users from "./Users";
 import Preloader from "../../common/Preloader/Proloader";
-import {withAuthRedirect} from "../../hoc/withAuthRedirect";
 import {compose} from "redux";
 import {
     getCurrentPage,
@@ -89,6 +88,7 @@ class UsersContainer extends React.Component {
 let mapStateToProps = (state) => {
     console.log('mapStateToProps')
     return {
+        // users: getUsersSuperSelector(state),
         users: getUsers(state),
         // прокинем pageSize, totalUsersCount, currentPage в компоненту
         pageSize: getPageSize(state),

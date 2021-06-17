@@ -2,6 +2,7 @@ import React from 'react';
 import classes from './ProfileInfo.module.css';
 import Preloader from "../../../common/Preloader/Proloader";
 import ProfileStatus from "./ProfileInfoStatus"
+import ProfileStatusWithHooks from "./ProfileInfoStatusWithHooks";
 
 const ProfileInfo = (props) => {
     // показывает preloader, если profile нет. profile загружен контейнерной компонентой Profile
@@ -17,7 +18,7 @@ const ProfileInfo = (props) => {
                 {/*src достанем из профиля*/}
                 {/*когда показыем profile статус есть и props и state синхронизированы*/}
                 <img src={props.profile.photos.large}/>
-                <ProfileStatus status={props.status} updateStatus={props.updateStatus} />
+                <ProfileStatusWithHooks status={props.status} updateStatus={props.updateStatus} />
 
             </div>
         </div>

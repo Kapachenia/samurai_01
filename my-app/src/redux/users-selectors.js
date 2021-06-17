@@ -1,13 +1,19 @@
 import React from "react";
-// import {createSelector} from "reselect";
+import {createSelector} from "reselect";
 
-// селектор - это функция, которая принимает весь state целиком и достаёт из него то что  нужно
+// селектор - это функция, которая принимает весь state целиком и возвращает часть state
 
-export const getUsers = (state) => {
-    return state.usersPage.users.filter(u => true);
+const getUsersSelector = (state) => {
+    return state.usersPage.users;
 }
 
-// создадим селектор с помощью специальной функции createSelector
+// создадим селектор с помощью библиотеки reselect, специальной функции createSelector
+// createSelector специальная функция,к оторая возвращает селектор, внутрь селектора передаём функцию,
+// которая будет выбирать что-то из state
+// первым параметром передаём тот селектор, который будет использоваться для получения значений
+export const getUsers = createSelector(getUsersSelector, (users) => {
+    return users.filter(u => true);
+})
 
 export const getPageSize = (state) => {
     return state.usersPage.pageSize;
