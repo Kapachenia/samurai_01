@@ -1,5 +1,6 @@
 import React from "react";
 import {usersAPI} from "../api/api";
+import {updateObjectInArray} from "../utils/object-helpers";
 
 const FOLLOW = 'FOLLOW';
 const UNFOLLOW = 'UNFOLLOW';
@@ -35,25 +36,30 @@ const usersReducer = (state = initialState, action) => {
 
 // проходим по id, возвращаем его, если не поменялся, если его нужно поменять, то меняем false на true
             return {
-                ...state, users: state.users.map(u => {
-// если userID пробегаемого с помощью .map равен userID, которого нужно зафоловить (он сидит в action),
-// то мы должны скопировать пользователя, поменять followed на true и вернуть его копию
-                    if (u.id === action.userId) {
-                        return {...u, followed: true}
-                    }
-                    return u;
-                })
+// вынесем чать логики в object-helpers
+                ...state,
+                users: updateObjectInArray(state.users, action.userId, "id", {followed: true})
+//                 users: state.users.map(u => {
+// // если userID пробегаемого с помощью .map равен userID, которого нужно зафоловить (он сидит в action),
+// // то мы должны скопировать пользователя, поменять followed на true и вернуть его копию
+//                     if (u.id === action.userId) {
+//                         return {...u, followed: true}
+//                     }
+//                     return u;
+//                 })
             }
         case UNFOLLOW:
             return {
-                ...state, users: state.users.map(u => {
-// если userID пробегаемого с помощью .map равен userID, которого нужно зафоловить (он сидит в action),
-// то мы должны скопировать пользователя, поменять followed на true и вернуть его копию
-                    if (u.id === action.userId) {
-                        return {...u, followed: false}
-                    }
-                    return u;
-                })
+                ...state,
+                users: updateObjectInArray(state.users, action.userId, "id", {followed: false})
+//                 users: state.users.map(u => {
+// // если userID пробегаемого с помощью .map равен userID, которого нужно зафоловить (он сидит в action),
+// // то мы должны скопировать пользователя, поменять followed на true и вернуть его копию
+//                     if (u.id === action.userId) {
+//                         return {...u, followed: false}
+//                     }
+//                     return u;
+//                 })
             }
 // старый state перезатираем users, которые пришли через action
         case SET_USERS: {
@@ -140,44 +146,67 @@ export const requestUsers = (page, pageSize) => {
 }
 }
 
-export const follow = (usesrId) => {
-    return async (dispatch) => {
-        dispatch(toggleFollowingProgress(true, usesrId));
-        // axios.post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`, {},
-        //     {
-        //         withCredentials: true,
-        //         headers: {"API-KEY": "716f1b8b-bc85-4d85-b00e-40338217278b"}
-        //     })
-        let response = await usersAPI.follow(usesrId);
-            // .then(response => {
-                if (response.data.resultCode == 0) {
-                    dispatch(followSuccess(usesrId));
-                }
-// по окончанию асинхронного запроса мы диспатчем false
-                dispatch(toggleFollowingProgress(false, usesrId));
+// зарефакторим follow и unfollow. Создадим общую функцию
+const followUnfollowFlow = async (dispatch, userId, apiMethod, actionCreator) => {
+    dispatch(toggleFollowingProgress(true, userId));
+    let response = await apiMethod(userId);
 
-            // });
+    if (response.data.resultCode == 0) {
+        dispatch(actionCreator(userId));
+    }
+    dispatch(toggleFollowingProgress(false, userId));
+}
+
+export const follow = (userId) => {
+    return async (dispatch) => {
+        followUnfollowFlow(dispatch, userId, usersAPI.follow.bind(usersAPI), followSuccess);
     }
 }
 
-export const unfollow = (usesrId) => {
+export const unfollow = (userId) => {
     return async (dispatch) => {
-        dispatch(toggleFollowingProgress(true, usesrId));
-        // axios.post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`, {},
-        //     {
-        //         withCredentials: true,
-        //         headers: {"API-KEY": "716f1b8b-bc85-4d85-b00e-40338217278b"}
-        //     })
-        let response = await usersAPI.unfollow(usesrId);
-            // .then(response => {
-                if (response.data.resultCode == 0) {
-                    dispatch(unfollowSuccess(usesrId));
-                }
-// по окончанию асинхронного запроса мы диспатчем false
-                dispatch(toggleFollowingProgress(false, usesrId));
-            // });
+        followUnfollowFlow(dispatch, userId, usersAPI.unfollow.bind(usersAPI), unfollowSuccess);
     }
 }
+
+// export const follow = (userId) => {
+//     return async (dispatch) => {
+//         dispatch(toggleFollowingProgress(true, userId));
+//         // axios.post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`, {},
+//         //     {
+//         //         withCredentials: true,
+//         //         headers: {"API-KEY": "716f1b8b-bc85-4d85-b00e-40338217278b"}
+//         //     })
+//         let response = await usersAPI.follow(userId);
+//             // .then(response => {
+//                 if (response.data.resultCode == 0) {
+//                     dispatch(followSuccess(userId));
+//                 }
+// // по окончанию асинхронного запроса мы диспатчем false
+//                 dispatch(toggleFollowingProgress(false, userId));
+//
+//             // });
+//     }
+// }
+//
+// export const unfollow = (userId) => {
+//     return async (dispatch) => {
+//         dispatch(toggleFollowingProgress(true, userId));
+//         // axios.post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`, {},
+//         //     {
+//         //         withCredentials: true,
+//         //         headers: {"API-KEY": "716f1b8b-bc85-4d85-b00e-40338217278b"}
+//         //     })
+//         let response = await usersAPI.unfollow(userId);
+//             // .then(response => {
+//                 if (response.data.resultCode == 0) {
+//                     dispatch(unfollowSuccess(userId));
+//                 }
+// // по окончанию асинхронного запроса мы диспатчем false
+//                 dispatch(toggleFollowingProgress(false, userId));
+//             // });
+//     }
+// }
 
 
 export default usersReducer;

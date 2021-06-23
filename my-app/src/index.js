@@ -1,22 +1,12 @@
 import reportWebVitals from './reportWebVitals';
-import store from './redux/redux-store';
 import ReactDOM from "react-dom";
 import React from "react";
-import App from "./App";
-import {BrowserRouter} from "react-router-dom";
-import {Provider} from "react-redux";
+import SamuraiJSApp from "./App";
 
-setInterval(() => {
-    store.dispatch({type: "FAKE"})
-}, 1000);
+// setInterval(() => {
+//     store.dispatch({type: "FAKE"})
+// }, 1000);
 
-    ReactDOM.render(
-        <BrowserRouter>
-            <Provider store = {store}>
-                <App />
-            </Provider>
-        </BrowserRouter>,
-        document.getElementById('root')
-    );
+    ReactDOM.render(<SamuraiJSApp />,document.getElementById('root'));
 
 reportWebVitals();

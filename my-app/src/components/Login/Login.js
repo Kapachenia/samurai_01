@@ -1,27 +1,22 @@
 import React from 'react';
 import {Field, reduxForm} from 'redux-form'
-import {Input} from "../../common/FormsControls/FormsConrols";
+import {createField, Input} from "../../common/FormsControls/FormsConrols";
 import {maxLengthCreator, required} from "../../utils/validators/validators";
 import {connect} from "react-redux";
 import {login} from "../../redux/auth-reducer";
 import {Redirect} from "react-router-dom";
 import s from "./../../common/FormsControls/FormsControls.module.css";
 
-const LoginForm = (props) => {
+const LoginForm = ({handleSubmit, error}) => {
     // console.log('rerender')
     return (
-        <form onSubmit={props.handleSubmit}>
-            <div>
-                <Field name={"email"} placeholder={"Email"} component={Input} validate={[required]} />
-            </div>
-            <div>
-                <Field name={"password"} placeholder={"Password"} type={"password"} component={Input} validate={[required]} />
-            </div>
-            <div>
-                <Field name={"rememberMe"} type={"checkbox"} component={Input} /> remember me
-            </div>
-            { props.error && <div className={s.formSummaryError}>
-            {props.error}</div>
+        <form onSubmit={handleSubmit}>
+            {createField("Email", "email", [required], Input)}
+            {createField("Password", "password", [required], Input, {type: "password"})}
+            {createField(null, "rememberMe", [], Input, {type: "checkbox"}, "remember me")}
+
+            {error && <div className={s.formSummaryError}>
+                {error}</div>
             }
             <div>
                 <button>Login</button>
@@ -48,13 +43,13 @@ const Login = (props) => {
     }
 // если в props придёт isAuth, значат залогинены и идём /profile
     if (props.isAuth) {
-        return <Redirect to={"/profile"} />
+        return <Redirect to={"/profile"}/>
     }
 // если не залогинены идём сюда
     return <div>
         <h1>Login</h1>
         {/*reduxForm собрали данные и собмитим*/}
-        <LoginReduxForm onSubmit={onSubmit} />
+        <LoginReduxForm onSubmit={onSubmit}/>
     </div>
 }
 
@@ -67,4 +62,4 @@ const mapStateToPropsAuth = (state) => ({
 // нам нужен isAuth, который лежит в state в redux-store в combineReducers
     isAuth: state.auth.isAuth
 })
-export default connect(mapStateToPropsAuth, {login} )(Login);
+export default connect(mapStateToPropsAuth, {login})(Login);

@@ -4,9 +4,9 @@ import Preloader from "../../../common/Preloader/Proloader";
 import ProfileStatus from "./ProfileInfoStatus"
 import ProfileStatusWithHooks from "./ProfileInfoStatusWithHooks";
 
-const ProfileInfo = (props) => {
+const ProfileInfo = ({profile, status, updateStatus}) => {
     // показывает preloader, если profile нет. profile загружен контейнерной компонентой Profile
-    if (!props.profile) {
+    if (!profile) {
         return <Preloader/>
     }
     return (
@@ -17,8 +17,8 @@ const ProfileInfo = (props) => {
             <div className={classes.descriptionBlok}>
                 {/*src достанем из профиля*/}
                 {/*когда показыем profile статус есть и props и state синхронизированы*/}
-                <img src={props.profile.photos.large}/>
-                <ProfileStatusWithHooks status={props.status} updateStatus={props.updateStatus} />
+                <img src={profile.photos.large}/>
+                <ProfileStatusWithHooks status={status} updateStatus={updateStatus} />
 
             </div>
         </div>

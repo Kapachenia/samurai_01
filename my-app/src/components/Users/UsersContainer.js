@@ -19,7 +19,8 @@ class UsersContainer extends React.Component {
 // компонента вмонтируется на страницу один раз
     componentDidMount() {
         // this.props.getUsersThunkCreator
-        this.props.getUsers(this.props.currentPage, this.props.pageSize);
+        let {currentPage, pageSize} = this.props;
+        this.props.getUsers(currentPage, pageSize);
         // перед запросом на сервер добавляем вызов toggleIsFetching
         // this.props.toggleIsFetching(true);
         // // getUsers находится в api.js
@@ -37,7 +38,8 @@ class UsersContainer extends React.Component {
 
 // меняем страничку
     onPageChanged = (pageNumber) => {
-        this.props.getUsers(pageNumber, this.props.pageSize);
+        let {pageSize} = this.props;
+        this.props.getUsers(pageNumber, pageSize);
         // this.props.setCurrentPage(pageNumber);
         // // В props на момент клика будет старое значение, по этому номер страницы возмям из pageNumber
         // // показываем крутилку, получаем данные, сетаем users, выключаем крутилку
@@ -86,7 +88,7 @@ class UsersContainer extends React.Component {
 // }
 
 let mapStateToProps = (state) => {
-    console.log('mapStateToProps')
+    // console.log('mapStateToProps')
     return {
         // users: getUsersSuperSelector(state),
         users: getUsers(state),

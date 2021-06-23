@@ -1,4 +1,4 @@
-import {applyMiddleware, combineReducers, createStore} from "redux";
+import {applyMiddleware, combineReducers, compose, createStore} from "redux";
 import profileReducer from "./profile-reducer";
 import dialogsReducer from "./dialogs-reducer";
 import usersReducer from "./users-reduser";
@@ -19,10 +19,14 @@ let reducers = combineReducers({
     app: appReducer
 });
 
+// для работы придлжения Redux DevTools добавляем перед созданием stora
+// composeEnhancers добавит ещё applyMiddleware для перехвата dispatch
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware)));
 
 // applyMiddleware - принять промежуточные слои
-let store = createStore(reducers, applyMiddleware(thunkMiddleware));
+// let store = createStore(reducers, applyMiddleware(thunkMiddleware));
 
-window.store = store;
+window._store_ = store;
 
 export default store;
